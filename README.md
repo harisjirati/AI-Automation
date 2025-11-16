@@ -25,7 +25,7 @@ This is useful for:
 
 ## ⚙️ Workflow Diagram
 
-![Gmail to Postgres automation workflow](./workflow.png)
+![Gmail to Postgres automation workflow](./Workflow.png)
 
 > Make sure you save the image above as `workflow.png` in your repo for it to render properly.
 
