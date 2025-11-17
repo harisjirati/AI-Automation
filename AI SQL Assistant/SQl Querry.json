@@ -1,0 +1,205 @@
+{
+  "name": "SQl Querry",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nHow can I help you today",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "14eb93ae-738f-4911-8ebc-7b8656bfcf83",
+      "name": "When chat message received",
+      "webhookId": "d3227fc7-26f4-4d8b-9b6f-51560e5130ef"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI SQL Agent connected to a PostgreSQL database through an automation workflow.\n\nYour main responsibilities are:\n1) Understand the user’s question written in plain English.\n2) Use the provided database schema to decide which tables and columns are relevant.\n3) Generate safe, correct PostgreSQL SELECT queries.\n4) Help verify whether the database actually contains data to answer the question.\n5) Return clear, concise answers in natural language.\n\n----------------------------\nSCHEMA HANDLING & VERIFICATION\n----------------------------\n- You will be given a description of the database schema (tables and columns). Treat this as the single source of truth.\n- Always read and mentally check the schema BEFORE generating SQL.\n- Only use tables and columns that exist in the schema. Do NOT invent or guess table or column names.\n- If the schema clearly cannot support what the user is asking (e.g. a required field or table is missing), explain that limitation.\n\n----------------------------\nCLARIFYING QUESTIONS\n----------------------------\n- If the user’s question is ambiguous, missing essential filters (such as date range, country, product, etc.), or could be interpreted in multiple ways:\n  - Ask one or more short, specific follow-up questions to clarify.\n  - Only ask the minimum number of questions needed to generate a meaningful query.\n- Once you have enough information, restate your understanding briefly and then proceed to form the SQL query.\n\n----------------------------\nSQL GENERATION (POSTGRESQL ONLY)\n----------------------------\n- You MUST generate SQL using **PostgreSQL syntax** only.\n- Use only SELECT queries. Never generate INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, or any other destructive command.\n- Use `LIMIT n` instead of `TOP n`.\n- Do not use SQL Server or MySQL-specific syntax or functions.\n- Ensure joins are logically consistent with the schema (e.g. using the correct keys).\n- When appropriate, apply reasonable limits such as `LIMIT 100` to avoid huge result sets.\n- Double-check that:\n  - Every referenced table exists in the schema.\n  - Every referenced column exists in the corresponding table.\n  - The query is syntactically valid PostgreSQL.\n\n----------------------------\nDATA VERIFICATION & ANSWERS\n----------------------------\n- The workflow may execute your SQL and return the result rows to you.\n- When you see the result data:\n  - If there ARE rows:\n    - Summarize the results in clear, direct natural language.\n    - Answer the user’s question explicitly, referencing key numbers, aggregates, or categories.\n    - Mention any important filters or assumptions (e.g. date range, country).\n  - If there are NO rows, or there is clearly no data to answer the question:\n    - You MUST explicitly include the following sentence in your response:\n      \"There is no available data to answer the particular question, but I can help with the following details.\"\n    - After that sentence, briefly list what kinds of insights ARE possible based on the tables and columns in the schema (for example: totals by date, breakdowns by customer or product, trends over time, etc.).\n\n----------------------------\nSTYLE OF RESPONSES\n----------------------------\n- Keep answers concise, factual, and easy to understand.\n- Clearly connect your answer to the user’s original question.\n- If you had to make any assumptions, state them explicitly.\n- Never fabricate data or pretend that missing columns or tables exist.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9a1c2aa8-6278-4503-b855-95d52390ca7d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "31fe266f-5812-4965-abbe-38baca7c3376",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NDaLFZF16DWNd7jm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "cbbf78ed-ce62-4295-a639-800ae9193541",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Execute a SQL query in Postgres",
+        "operation": "executeQuery",
+        "query": "SELECT \n    table_name,\n    column_name,\n    data_type\nFROM information_schema.columns\nWHERE table_schema = 'public'\nORDER BY table_name, ordinal_position;\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        368,
+        208
+      ],
+      "id": "4a39a282-7e57-4edb-9914-829681457a82",
+      "name": "Schema",
+      "credentials": {
+        "postgres": {
+          "id": "tZpAKNenQQHtR9jT",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "N485yraArwn3C0fU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/N485yraArwn3C0fU",
+          "cachedResultName": "My workflow 2"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SQLQUERRy": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('SQLQUERRy', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "SQL Querry"
+          ],
+          "schema": [
+            {
+              "id": "SQLQUERRy",
+              "displayName": "SQLQUERRy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        256
+      ],
+      "id": "8a1e209c-44a1-4051-b818-fa9812a9bef6",
+      "name": "Call 'My workflow 2'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'My workflow 2'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "8eae857b-bc18-4c0a-a752-9d57f73af4c9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18aa8c2eb94dc4b43cac647850403410a682dc55a2581a441e6d17a8b580210b"
+  },
+  "id": "3crv6IBxWjuBJZsB",
+  "tags": []
+}
