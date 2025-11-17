@@ -1,68 +1,63 @@
-QueryFlow AI — Natural Language to SQL Agent (n8n + PostgreSQL)
+# QueryFlow AI — Natural Language to SQL Agent (n8n + PostgreSQL)
 
-🚀 Overview
+![AI SQL Agent Workflow](/Workflow.png)
 
-QueryFlow AI is an intelligent SQL Agent built using n8n, PostgreSQL, and an AI model (OpenAI / LLM).
-It allows users to ask plain English questions, which are then:
+---
 
-Understood by AI
+## 🚀 Overview
 
-Converted into PostgreSQL SQL queries
+QueryFlow AI is an intelligent SQL Agent built using **n8n**, **PostgreSQL**, and an **LLM (OpenAI or similar)**.
 
-Executed in real-time on your database
+It converts **plain English questions into SQL queries**, executes them, and returns the results — all automatically.
 
-Answered back in human language
+If the question is unclear, it asks follow-up questions.
 
-If the question is unclear → it asks follow-up questions.
-If the data doesn’t exist → it clearly responds:
+If no data exists, it responds with:
 
-"There is no available data to answer the particular question, but I can help with the following details."
+**"There is no available data to answer the particular question, but I can help with the following details."**
 
-🧠 What It Can Do
+---
 
-✔️ Understand natural language questions
-✔️ Read your database schema dynamically
-✔️ Create safe Postgres SQL queries
-✔️ Execute them live using n8n
-✔️ Return answers in readable format
-✔️ Ask clarifying questions when needed
-✔️ Handle "no-data" cases gracefully
+## 🧠 Features
 
-🏗️ Tech Stack
+- Natural language → SQL conversion  
+- Dynamic schema awareness  
+- Valid PostgreSQL query generation  
+- Automatic SQL execution via n8n  
+- Friendly plain-language responses  
+- Follow-up question handling  
+- Graceful empty-result messaging  
 
-n8n (Orchestration)
+---
 
-PostgreSQL (Database)
+## 🏗️ Tech Stack
 
-OpenAI / LLM (AI reasoning)
+- **n8n** (automation & orchestration)
+- **PostgreSQL** (database)
+- **LLM / OpenAI** (AI logic + reasoning)
+- **Webhook / AI Chat** (user interface)
+- **JSON tool calling** (SQL execution workflow)
 
-Webhook / AI Chat (User input)
+---
 
-JSON-based tool calling (SQL execution workflow)
+## 🔄 Workflow Logic
 
-🔄 Workflow Logic
+1. User sends question (Webhook or AI Chat)
+2. Agent retrieves schema from database
+3. Agent determines:
+   - Is it answerable?
+   - Is clarification needed?
+4. If clear → generates safe SQL (PostgreSQL only)
+5. n8n runs the query
+6. If results exist → AI summarizes answer
+7. If empty → returns fallback message
+8. User gets clean answer in plain English
 
-User sends a natural language question
+---
 
-Agent retrieves database schema
+## 📜 Schema Retrieval Query
 
-Agent decides:
-
-Is the question answerable?
-
-Is follow-up needed?
-
-If clear → generates valid PostgreSQL SQL
-
-n8n executes query
-
-If results exist → AI summarizes answer
-
-If no data → Responds with fallback message
-
-Returns a friendly, clear response
-
-🗄️ Schema Retrieval SQL
+```sql
 SELECT 
     table_name,
     column_name,
@@ -70,51 +65,3 @@ SELECT
 FROM information_schema.columns
 WHERE table_schema = 'public'
 ORDER BY table_name, ordinal_position;
-
-🤖 System Message (Core Instructions for AI)
-
-You are an AI SQL Agent connected to a PostgreSQL database.
-Only use tables and columns from the schema.
-If unclear — ask follow-up questions.
-Use PostgreSQL syntax only (LIMIT instead of TOP).
-Never write INSERT / UPDATE / DELETE / DROP.
-If no data exists, say:
-
-"There is no available data to answer the particular question, but I can help with the following details."
-
-📸 Workflow Preview
-
-Replace this:
-
-<PLACE_WORKFLOW_IMAGE_LINK_HERE>
-
-
-With your actual image link, or embed like:
-
-![QueryFlow AI Workflow](https://your-image-host.com/workflow.png)
-
-🧪 Example Queries
-
-"Show me total sales in India for 2023"
-
-"Top 3 customers in USA ordered by revenue"
-
-"How many users signed up last month?"
-
-🔧 How to Run / Use
-
-Import workflow into n8n
-
-Connect PostgreSQL
-
-Connect OpenAI (or LM Studio / Ollama)
-
-Activate workflow
-
-Share your webhook or AI Chat URL
-
-Ask questions → get answers!
-
-👤 Author
-
-Haris Jirati
