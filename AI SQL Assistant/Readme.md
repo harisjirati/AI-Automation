@@ -1,6 +1,6 @@
 # QueryFlow AI — Natural Language to SQL Agent (n8n + PostgreSQL)
 
-![AI SQL Agent Workflow](/Workflow.png)
+![AI SQL Agent Workflow](./Workflow.png)
 
 ---
 
