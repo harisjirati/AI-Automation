@@ -1,0 +1,271 @@
+{
+  "name": "Email",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "33fd418b-ebe7-41e0-a902-5775f8980189",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4640e35b-86b5-482b-ac40-8402f771d8ea",
+              "leftValue": "=={{ $json[\"email\"] }}",
+              "rightValue": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "fe5d34f5-5141-4965-a70a-f280cc39eda0",
+      "name": "check email format"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT email, name, title, company\nFROM public.hr_emails;\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9b8b8911-fb88-4dea-b144-8048bc89624b",
+      "name": "Data_base",
+      "credentials": {
+        "postgres": {
+          "id": "BKxEg3oL0leuTI0F",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "17dc1654-5600-4177-8759-a9a892a36ee5",
+      "name": "Separator"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1b1QHb-3NQ6hr6xNGVWXGpFdw0wpJlAZh32_Xdgy6W4U",
+          "mode": "list",
+          "cachedResultName": "invalid ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b1QHb-3NQ6hr6xNGVWXGpFdw0wpJlAZh32_Xdgy6W4U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b1QHb-3NQ6hr6xNGVWXGpFdw0wpJlAZh32_Xdgy6W4U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Data_base').item.json.name }}",
+            "Email": "={{ $('Data_base').item.json.email }}",
+            "Title": "={{ $('Data_base').item.json.title }}",
+            "Company": "={{ $('Data_base').item.json.company }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Column 6",
+              "displayName": "Column 6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        0
+      ],
+      "id": "15e6dcae-66c7-4d2e-ad55-5199bee434d4",
+      "name": "Invalid_mails",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mjeZu6VRtbXHKyfX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Inquiry About Analyst Job Opportunities",
+        "message": "=Hi {{$json[\"name\"] || \"there\"}},<br><br>  I hope you are doing well. My name is <b>Haris Jirati</b>, and I have recently completed my B.Tech in Electronics and Telecommunication Engineering. I am reaching out to inquire if there are any current or upcoming opportunities in the <b>Data Analyst / Business Analyst</b> domain within your organization.<br><br>  Along with my strong foundation in <b>SQL, Python, Excel, and Power BI</b>, I have worked on several AI and automation-based projects, including:<br><br>  • AI SQL Agent that converts natural language queries into SQL<br> • Automation workflows using n8n and API integrations<br> • Auto data-fetching pipelines for Google Sheets & databases<br> • Analytical dashboards and models for sales, churn, and customer insights<br><br>  I am eager to contribute my analytical and automation skills to a dynamic team and grow within the organization.<br><br>  I’m attaching my resume link here for your reference:<br> 🔗 <a href=\"https://drive.google.com/file/d/1jfJTtYa5VQBnMJYfLXi5Np372M4iegvJ/view?usp=sharing\" target=\"_blank\">Resume Link</a><br><br>  I would be grateful if you could let me know about any suitable openings or guide me on the application process.<br><br>  Thank you for your time and consideration. I look forward to hearing from you.<br><br>  Warm regards,<br> <b>Haris Jirati</b><br> Solapur, Maharashtra<br> +91 7249845273<br> LinkedIn: <a href=\"https://linkedin.com/in/harisjiratii\" target=\"_blank\">linkedin.com/in/harisjiratii</a><br> ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        -192
+      ],
+      "id": "e688eb97-de67-4c5f-a182-640dd688bd54",
+      "name": "Mail",
+      "webhookId": "6f94e1e1-bb3a-4a08-a119-3587aeb7a2f1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "M5tR51Bu4tRBrUqm",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Data_base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check email format": {
+      "main": [
+        [
+          {
+            "node": "Mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid_mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_base": {
+      "main": [
+        [
+          {
+            "node": "Separator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separator": {
+      "main": [
+        [
+          {
+            "node": "check email format",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Separator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "703be046-cb03-496a-885d-a7929a902348",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18aa8c2eb94dc4b43cac647850403410a682dc55a2581a441e6d17a8b580210b"
+  },
+  "id": "VjpOskxRpJLA2H2I",
+  "tags": []
+}
